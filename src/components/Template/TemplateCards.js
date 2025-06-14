@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TemplateProvider, { TemplateContext } from '../../context/TemplateContext';
 
 const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, handleDownload, template, projectId }) => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
     }
   };
 
-  const handleDocumentDocument = (docObj) => {
+  const handleDownloadDocument = (docObj) => {
     setMenuOpen(false);
     handleDownload(docObj);
   }
@@ -135,7 +136,7 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
             {template && (
               <button
                 className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => handleDocumentDocument(docObj)}
+                onClick={() => handleDownloadDocument(docObj)}
               >
                 <DownloadIcon /> Download
               </button>
@@ -163,7 +164,7 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
           }}
         >
           {/* Using a placeholder image if thumbnail is not available */}
-          {thumbnail && (thumbnail !== null || thumbnail !== undefined) ? (
+          {thumbnail ? (
             <img
               src={`data:image/png;base64,${thumbnail}`}
               alt={name}
@@ -189,7 +190,7 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
           <div className="p-6 bg-white rounded-lg shadow-lg max-w-sm mx-auto">
             <h5 className="text-xl font-bold text-center mb-4 text-gray-800">Are you sure?</h5>
-            <p className="text-center mb-6 text-gray-600">You want to delete the {!template ? 'template' : 'document'}?</p>
+            <p className="text-center mb-6 text-gray-600">You want to delete the {template ? 'document' : 'template'}?</p>
             <div className="flex justify-center space-x-4">
               <button
                 className="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors duration-200"
@@ -211,23 +212,34 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
   );
 };
 
-const TemplateCards = ({ documents, handleDeleteTemplate, handleDownload, template = false, projectId }) => {
+
+const TemplateCards = ({ handleDeleteTemplate, handleDownload, template = false, projectId }) => {
   return (
-    <div id="cardContainer" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-4 justify-items-center h-full overflow-y-auto">
-      {documents.map((doc) => (
-        <Card
-          docObj={doc}
-          key={doc._id}
-          documentId={doc._id}
-          name={doc.fileName}
-          thumbnail={doc.thumbnail}
-          handleDelete={handleDeleteTemplate}
-          handleDownload={handleDownload}
-          template={template}
-          projectId={projectId}
-        />
-      ))}
-    </div>
+    <TemplateProvider>
+      <div id="cardContainer" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-4 justify-items-center h-full overflow-y-auto">
+        <TemplateContext.Consumer>
+          {({ templates }) => (
+            !templates ? (
+              <div>Loading templates...</div>
+            ) : (
+              templates.map((doc) => (
+                <Card
+                  docObj={doc}
+                  key={doc._id}
+                  documentId={doc._id}
+                  name={doc.fileName}
+                  thumbnail={doc.thumbnail}
+                  handleDelete={handleDeleteTemplate}
+                  handleDownload={handleDownload}
+                  template={template}
+                  projectId={projectId}
+                />
+              ))
+            )
+          )}
+        </TemplateContext.Consumer>
+      </div>
+    </TemplateProvider>
   );
 };
 

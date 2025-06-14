@@ -4,7 +4,7 @@ import NeoModal from './NeoModal';
 import GenerateDocument from './GenerateDocument';
 import { FaMagic, FaSearch } from "react-icons/fa";
 import { FaPenNib } from "react-icons/fa";
-import bannerImage from "../Assets/banner1.png";
+import bannerImage from "../Assets/banner2.png";
 
 
 const SearchHeader = ({projectId, hasProject = false}) => {

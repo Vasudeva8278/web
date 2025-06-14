@@ -55,7 +55,12 @@ const NeoProjectTemplates = () => {
         setDocuments(response);
         setLoading(false);
       } catch (err) {
-        setError(err.message || 'Failed to fetch templates for this project');
+        console.error("Failed to fetch templates", err);
+        if (err.message === 'Network Error') {
+          setError('Backend server is not running. Please start the server at http://localhost:7000');
+        } else {
+          setError(err.message || 'Failed to fetch templates for this project');
+        }
         setLoading(false);
       }
     }
@@ -65,11 +70,20 @@ const NeoProjectTemplates = () => {
   const fetchDocuments = useCallback(async () => {
     if (projectData?._id) {
       try {
+        setLoading(true);
+        setError(null);
         const response = await getHomePageDocuments(projectData._id);
         const data = response;
         setDocTemplates(data);
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch documents", error);
+        if (error.message === 'Network Error') {
+          setError('Backend server is not running. Please start the server at http://localhost:7000');
+        } else {
+          setError(error.message || 'Failed to fetch documents');
+        }
+        setLoading(false);
       }
     }
   }, [projectData]);
@@ -177,7 +191,7 @@ const NeoProjectTemplates = () => {
             </h2>
             <div className='flex justify-center'>
               {loading && <div>Loading...</div>}
-              {error && <div className="text-red-500">Failed to fetch templates. Please try again.</div>}
+              {error && <div className="text-red-500">{error}</div>}
               {!loading && !error && documents?.length === 0 && (
                 <div>No templates found. Please add some templates.</div>
               )}
@@ -195,14 +209,20 @@ const NeoProjectTemplates = () => {
             </h2>
             <div className='flex justify-center space-x-4'>
               {loading && <div>Loading...</div>}
-              <TemplateCards
-                projectId={projectData?._id}
-                documents={docTemplates}
-                template={true}
-                handleDeleteTemplate={handleDeleteDocument}
-                handleDownload={handleDocumentDownload}
-                className='border p-4 rounded-lg shadow-md'
-              />
+              {error && <div className="text-red-500">Failed to fetch documents. Please try again.</div>}
+              {!loading && !error && docTemplates?.length === 0 && (
+                <div>No documents found for this project.</div>
+              )}
+              {!loading && !error && docTemplates?.length > 0 && (
+                <TemplateCards
+                  projectId={projectData?._id}
+                  documents={docTemplates}
+                  template={true}
+                  handleDeleteTemplate={handleDeleteDocument}
+                  handleDownload={handleDocumentDownload}
+                  className='border p-4 rounded-lg shadow-md'
+                />
+              )}
             </div>
           </div>
         </div>

@@ -102,8 +102,8 @@ export const getAllTemplates = async () => {
   return response.data;
 };
 
-export const getTemplateById = async (projectId, templateId) => {
-  const response = await api.get(`/templates/${projectId}/${templateId}`);
+export const getTemplateById = async (templateId) => {
+  const response = await api.get(`/templates/${templateId}`);
   return response.data;
 };
 
@@ -123,7 +123,7 @@ export const deleteTemplateById = async (templateId) => {
     return response;
   } catch (error) {
     console.error('Error while deleting template by ID', error);
-    throw error;
+    throw handleApiError(error);
   }
 };
 
@@ -150,9 +150,9 @@ export const getTemplatesById = async (projectId, templateId) => {
   }
 };
 
-export const getConvertedTemplate = async (projectId, templateId) => {
+export const getConvertedTemplate = async (templateId) => {
   try {
-    const response = await api.get(`/templates/${projectId}/${templateId}/converted`);
+    const response = await api.get(`/templates/${templateId}/converted`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }

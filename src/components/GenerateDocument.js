@@ -8,6 +8,7 @@ import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { ProjectContext } from "../context/ProjectContext";
+import { TemplateContext } from "../context/TemplateContext";
 
 const GenerateDocument = ({ onClose, value, hasProject }) => {
   const navigate = useNavigate();
@@ -17,45 +18,9 @@ const GenerateDocument = ({ onClose, value, hasProject }) => {
   //const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const { projects } = useContext(ProjectContext);
-  /*
-  useEffect(() => {
-    const fetchTemplatesAndProjects = async () => {
-      if (hasProject && projectId) {
-        try {
-          setProjectId(projectId);
-          setLoading(true);
-          const response = await getTemplatesByProjectId(projectId);
-          if (response) {
-            setTemplates(response);
-          }
-        } catch (error) {
-          console.error("Failed to fetch templates", error);
-          toast.error("Failed to fetch templates");
-        } finally {
-          setLoading(false);
-        }
-      }
-      fetchProjects();
-    };
+  // Remove the duplicate declaration of 'templates'
+  // const { templates } = useContext(TemplateContext);
 
-    fetchTemplatesAndProjects();
-  }, [projectId, hasProject]);
-
-  const fetchProjects = async () => {
-    try {
-      setLoading(true);
-      const response = await getAllProjects();
-      if (response) {
-        setProjects(response);
-      }
-    } catch (error) {
-      console.error("Failed to fetch projects", error);
-      toast.error("Failed to fetch projects");
-    } finally {
-      setLoading(false);
-    }
-  };
-*/
   const handleTemplateChange = (e) => {
     setTemplateId(e.target.value);
   };
