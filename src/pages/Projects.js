@@ -59,22 +59,30 @@ const Projects = () => {
       <div className="m-1">
         <SearchHeader />
       </div>
-      <div className="flex justify-end mb-3 px-3 p-1 mt-3 mr-3 rounded-lg bg-blue-50">
+      <div className="flex justify-end mb-3 px-3 p-1 mt-3 mr-3 rounded-lg ">
         <button
-          className="bg-indigo-500 hover:bg-blue-700 text-white font-normal py-1.5 px-3 rounded-lg"
+          className="bg-indigo-500  text-white font-normal py-1.5 px-3 rounded-lg"
           onClick={() => setIsModalOpen(true)}
         >
           <MdAssignmentAdd className="inline" /> Add Project
         </button>
+        
       </div>
+      <div className="mb-8 p-4 bg-white rounded-lg shadow-sm">
+        <p className="text-xl font-semibold text-gray-700">
+          Total Projects: <span className="text-indigo-600">{projects.length}</span>
+        </p>
+      </div>
+
       <div className="w-full p-1">
-        <h2 className="text-2xl font-semibold mb-3 text-left ml-12">Projects</h2>
-        <div className="flex justify-center">
+        <h2 className="text-2xl font-semibold mb-3 text-left ml-12 ">Projects</h2>
+        <div className="flex justify-center gap-6">
+         
           {loading && <div>Loading...</div>}
           <ProjectCards projects={projects} onEdit={handleEdit} />
         </div>
       </div>
-
+     
       <NeoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <NeoProject
           mode={project._id ? "edit" : "add"}

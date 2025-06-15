@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TemplateProvider, { TemplateContext } from '../../context/TemplateContext';
+import { TemplateContext } from '../../context/TemplateContext';
 
 const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, handleDownload, template, projectId }) => {
   const navigate = useNavigate();
@@ -212,34 +212,30 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
   );
 };
 
-
 const TemplateCards = ({ handleDeleteTemplate, handleDownload, template = false, projectId }) => {
+  const templateContext = useContext(TemplateContext);
+  const templates = templateContext?.templates || [];
+
+  if (!templates) {
+    return <div>Loading templates...</div>;
+  }
+
   return (
-    <TemplateProvider>
-      <div id="cardContainer" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-4 justify-items-center h-full overflow-y-auto">
-        <TemplateContext.Consumer>
-          {({ templates }) => (
-            !templates ? (
-              <div>Loading templates...</div>
-            ) : (
-              templates.map((doc) => (
-                <Card
-                  docObj={doc}
-                  key={doc._id}
-                  documentId={doc._id}
-                  name={doc.fileName}
-                  thumbnail={doc.thumbnail}
-                  handleDelete={handleDeleteTemplate}
-                  handleDownload={handleDownload}
-                  template={template}
-                  projectId={projectId}
-                />
-              ))
-            )
-          )}
-        </TemplateContext.Consumer>
-      </div>
-    </TemplateProvider>
+    <div id="cardContainer" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-4 justify-items-center h-full overflow-y-auto">
+      {templates.map((doc) => (
+        <Card
+          docObj={doc}
+          key={doc._id}
+          documentId={doc._id}
+          name={doc.fileName}
+          thumbnail={doc.thumbnail}
+          handleDelete={handleDeleteTemplate}
+          handleDownload={handleDownload}
+          template={template}
+          projectId={projectId}
+        />
+      ))}
+    </div>
   );
 };
 
