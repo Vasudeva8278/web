@@ -9,20 +9,19 @@ import { AuthProvider, AuthContext } from "./context/AuthContext";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import ForgotPassword from "./components/Auth/ForgotPassword";
+import ResetPassword from "./components/Auth/ResetPassword";
+import PasswordEmailResetSuccess from "./components/Auth/PasswordResetEmailSucces";
+import VerifyEmail from "./components/Auth/VerifyEmail";
 import NotAuthorized from "./components/NotAuthorized";
 import Organizations from "./components/Organizations";
 import Home from "./components/Home";
 import PrivateRoute from "./components/PrivateRoute";
-import { ProjectProvider } from "./context/ProjectContext";
-import ResetPassword from "./components/Auth/ResetPassword";
-import PasswordEmailResetSuccess from "./components/Auth/PasswordResetEmailSucces";
-import VerifyEmail from "./components/Auth/VerifyEmail";
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <div>
+        <div className="min-h-screen bg-gray-50">
           <Routes>
             <Route
               path='/login'
@@ -85,9 +84,7 @@ const App = () => {
               path='/*'
               element={
                 <PrivateRoute>
-                  <ProjectProvider>
-                    <Home />
-                  </ProjectProvider>
+                  <Home />
                 </PrivateRoute>
               }
             />
@@ -97,9 +94,9 @@ const App = () => {
     </AuthProvider>
   );
 };
+
 const PublicRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
-
   return user ? <Navigate to='/projects' /> : children;
 };
 
