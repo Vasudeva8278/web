@@ -22,6 +22,7 @@ const Select = forwardRef(({
         <label className="form-label">
           {label}
           {props.required && <span className="text-red-500 ml-1">*</span>}
+          }
         </label>
       )}
       <select
