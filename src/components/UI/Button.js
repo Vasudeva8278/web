@@ -75,6 +75,7 @@ const Button = ({
         <span className="flex items-center">{icon}</span>
       )}
       {children && <span>{children}</span>}
+      }
       {!loading && icon && iconPosition === 'right' && (
         <span className="flex items-center">{icon}</span>
       )}
