@@ -6,11 +6,19 @@ const Card = ({
   className = '',
   hover = true,
   padding = true,
+  variant = 'default',
   ...props
 }) => {
+  const variantClasses = {
+    default: 'card',
+    elevated: 'card shadow-lg',
+    outlined: 'card border-2',
+    flat: 'bg-white border border-gray-200 rounded-xl'
+  };
+
   const cardClasses = [
-    'card',
-    hover ? 'hover:shadow-lg hover:-translate-y-1' : '',
+    variantClasses[variant],
+    hover ? 'hover:shadow-lg hover:-translate-y-1 transition-all duration-200' : '',
     className
   ].filter(Boolean).join(' ');
 
@@ -22,9 +30,13 @@ const Card = ({
       className={cardClasses}
       {...props}
     >
-      <div className={padding ? 'card-body' : ''}>
-        {children}
-      </div>
+      {padding ? (
+        <div className="p-6">
+          {children}
+        </div>
+      ) : (
+        children
+      )}
     </motion.div>
   );
 };

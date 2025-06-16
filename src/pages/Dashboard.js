@@ -7,7 +7,8 @@ import {
   FaDownload,
   FaPlus,
   FaEye,
-  FaEdit
+  FaEdit,
+  FaTrendingUp
 } from 'react-icons/fa';
 import { ProjectContext } from '../context/ProjectContext';
 import { TemplateContext } from '../context/TemplateContext';
@@ -24,7 +25,6 @@ const Dashboard = () => {
   const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
-    // Mock recent activity data
     setRecentActivity([
       {
         id: 1,
@@ -126,7 +126,11 @@ const Dashboard = () => {
     <Layout>
       <div className="space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <motion.div 
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
             <p className="text-gray-600 mt-1">Welcome back! Here's what's happening with your projects.</p>
@@ -140,7 +144,7 @@ const Dashboard = () => {
               Create Template
             </Button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -157,106 +161,141 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <Card>
-          <Card.Header>
-            <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
-            <p className="text-gray-600">Get started with common tasks</p>
-          </Card.Header>
-          <Card.Body>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {quickActions.map((action, index) => (
-                <motion.button
-                  key={action.title}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={action.action}
-                  className="p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all text-left"
-                >
-                  <div className={`inline-flex p-2 rounded-lg ${action.color} text-white mb-3`}>
-                    <action.icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 mb-1">{action.title}</h3>
-                  <p className="text-sm text-gray-600">{action.description}</p>
-                </motion.button>
-              ))}
-            </div>
-          </Card.Body>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card>
+            <Card.Header>
+              <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
+              <p className="text-gray-600">Get started with common tasks</p>
+            </Card.Header>
+            <Card.Body>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {quickActions.map((action, index) => (
+                  <motion.button
+                    key={action.title}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={action.action}
+                    className="p-6 rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all text-left bg-white"
+                  >
+                    <div className={`inline-flex p-3 rounded-lg ${action.color} text-white mb-4`}>
+                      <action.icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-2">{action.title}</h3>
+                    <p className="text-sm text-gray-600">{action.description}</p>
+                  </motion.button>
+                ))}
+              </div>
+            </Card.Body>
+          </Card>
+        </motion.div>
 
         {/* Recent Activity & Recent Projects */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Activity */}
-          <Card>
-            <Card.Header>
-              <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-            </Card.Header>
-            <Card.Body>
-              <div className="space-y-4">
-                {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-start gap-3">
-                    <div className={`p-2 rounded-full bg-${activity.color}-100 text-${activity.color}-600`}>
-                      <activity.icon className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900">{activity.title}</p>
-                      <p className="text-sm text-gray-600">{activity.description}</p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card.Body>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card>
+              <Card.Header>
+                <div className="flex items-center gap-2">
+                  <FaTrendingUp className="h-5 w-5 text-blue-500" />
+                  <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
+                </div>
+              </Card.Header>
+              <Card.Body>
+                <div className="space-y-4">
+                  {recentActivity.map((activity, index) => (
+                    <motion.div 
+                      key={activity.id} 
+                      className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 + index * 0.1 }}
+                    >
+                      <div className={`p-2 rounded-full bg-${activity.color}-100 text-${activity.color}-600`}>
+                        <activity.icon className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900">{activity.title}</p>
+                        <p className="text-sm text-gray-600">{activity.description}</p>
+                        <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </Card.Body>
+            </Card>
+          </motion.div>
 
           {/* Recent Projects */}
-          <Card>
-            <Card.Header>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Recent Projects</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/projects')}
-                >
-                  View All
-                </Button>
-              </div>
-            </Card.Header>
-            <Card.Body>
-              <div className="space-y-3">
-                {projects?.slice(0, 5).map((project) => (
-                  <div key={project._id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                        {project.projectName.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{project.projectName}</p>
-                        <p className="text-sm text-gray-600">Updated recently</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={<FaEye />}
-                        onClick={() => navigate(`/projects/${project._id}`)}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={<FaEdit />}
-                        onClick={() => navigate(`/projects/${project._id}`)}
-                      />
-                    </div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card>
+              <Card.Header>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FaProjectDiagram className="h-5 w-5 text-green-500" />
+                    <h2 className="text-xl font-semibold text-gray-900">Recent Projects</h2>
                   </div>
-                ))}
-              </div>
-            </Card.Body>
-          </Card>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate('/projects')}
+                  >
+                    View All
+                  </Button>
+                </div>
+              </Card.Header>
+              <Card.Body>
+                <div className="space-y-3">
+                  {projects?.slice(0, 5).map((project, index) => (
+                    <motion.div 
+                      key={project._id} 
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/projects/${project._id}`)}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 + index * 0.1 }}
+                      whileHover={{ x: 4 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                          {project.projectName.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{project.projectName}</p>
+                          <p className="text-sm text-gray-600">Updated recently</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          icon={<FaEye />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/projects/${project._id}`);
+                          }}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </Card.Body>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </Layout>

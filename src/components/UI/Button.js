@@ -12,6 +12,7 @@ const Button = ({
   className = '',
   onClick,
   type = 'button',
+  fullWidth = false,
   ...props
 }) => {
   const baseClasses = 'btn';
@@ -19,19 +20,24 @@ const Button = ({
     primary: 'btn-primary',
     secondary: 'btn-secondary',
     success: 'btn-success',
+    warning: 'btn-warning',
+    danger: 'btn-danger',
     outline: 'btn-outline',
     ghost: 'btn-ghost'
   };
   const sizeClasses = {
+    xs: 'btn-xs',
     sm: 'btn-sm',
-    md: '',
-    lg: 'btn-lg'
+    md: 'btn-md',
+    lg: 'btn-lg',
+    xl: 'btn-xl'
   };
 
   const buttonClasses = [
     baseClasses,
     variantClasses[variant],
     sizeClasses[size],
+    fullWidth ? 'w-full' : '',
     className
   ].filter(Boolean).join(' ');
 
@@ -55,8 +61,9 @@ const Button = ({
 
   return (
     <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
-      whileTap={{ scale: disabled ? 1 : 0.98 }}
+      whileHover={disabled ? {} : { scale: 1.02 }}
+      whileTap={disabled ? {} : { scale: 0.98 }}
+      transition={{ duration: 0.1 }}
       className={buttonClasses}
       disabled={disabled || loading}
       onClick={onClick}
@@ -67,7 +74,7 @@ const Button = ({
       {!loading && icon && iconPosition === 'left' && (
         <span className="flex items-center">{icon}</span>
       )}
-      <span>{children}</span>
+      {children && <span>{children}</span>}
       {!loading && icon && iconPosition === 'right' && (
         <span className="flex items-center">{icon}</span>
       )}

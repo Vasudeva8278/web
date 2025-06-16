@@ -1,12 +1,24 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { TemplateContext } from '../../context/TemplateContext';
+import Button from '../UI/Button';
+import Card from '../UI/Card';
+import {
+  FaFileAlt,
+  FaEdit,
+  FaDownload,
+  FaTrash,
+  FaEllipsisV,
+  FaEye,
+  FaPlus
+} from 'react-icons/fa';
 
-const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, handleDownload, template, projectId }) => {
+const TemplateCard = ({ docObj, documentId, name, thumbnail, handleDelete, handleDownload, template, projectId }) => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const menuRef = useRef(null);
-  const [deleteTemplateModal, setDeleteTemplateModal] = useState(false);
 
   const handleView = (docId) => {
     if (template) {
@@ -25,10 +37,6 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
     }
     navigate(goTo);
   };
-
-  const promptForDeletion = (documentId) => {
-    setDeleteTemplateModal(true);
-  }
 
   const handleCreateDocuments = (docId) => {
     navigate(`/export/${docId}?projectId=${projectId}`);
@@ -50,7 +58,7 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
   }
 
   const confirmDelete = () => {
-    setDeleteTemplateModal(false);
+    setDeleteModal(false);
     handleDelete(documentId);
   }
 
@@ -61,154 +69,178 @@ const Card = ({ docObj, documentId, name, thumbnail, content, handleDelete, hand
     };
   }, []);
 
-  // Inline SVG for EllipsisV icon
-  const EllipsisVIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512" fill="currentColor" className="w-5 h-5">
-      <path d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM0 128c0 53 43 96 96 96s96-43 96-96S149 32 96 32 0 75 0 128zm0 256c0 53 43 96 96 96s96-43 96-96S149 320 96 320 0 363 0 416z"/>
-    </svg>
-  );
-
-  // Inline SVG for FileAlt icon
-  const FileAltIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor" className="w-4 h-4 mr-2">
-      <path d="M369.9 97.9L286 14.1C277.9 5.7 266.4 0 254.6 0H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V154.6c0-11.8-4.7-23.3-12.1-31.7zM320 464H64V48h160v104c0 13.3 10.7 24 24 24h104v288z"/>
-    </svg>
-  );
-
-  // Inline SVG for Edit icon
-  const EditIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" className="w-4 h-4 mr-2">
-      <path d="M402.6 83.2l90.2 90.2c12.5 12.5 12.5 32.8 0 45.3l-246.3 246.3c-12.5 12.5-32.8 12.5-45.3 0L32.8 325.2c-12.5-12.5-12.5-32.8 0-45.3l246.3-246.3c12.5-12.5 32.8-12.5 45.3 0l90.2 90.2zm20.4-20.4L330.4 0H512c35.3 0 64 28.7 64 64V240.4L423 42.6zM0 432c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V384H0v48z"/>
-    </svg>
-  );
-
-  // Inline SVG for Download icon
-  const DownloadIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" className="w-4 h-4 mr-2">
-      <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V256H136c-22.1 0-41 12.7-50.5 32.5s-2.3 43.1 12.7 58.1L236.4 445.6c12.5 12.5 32.8 12.5 45.3 0l152-152c15-15 17.7-37.5 12.7-58.1s-28.4-32.5-50.5-32.5H288V32z"/>
-    </svg>
-  );
-
-  // Inline SVG for Trash icon
-  const TrashIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" className="w-4 h-4 mr-2">
-      <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.4C301.1 6.8 291.5 0 281.3 0H166.7c-10.2 0-19.8 6.8-23.5 17.7zM400 128H48L70.4 472c1.1 18.1 16.5 32 34.6 32H343c18.1 0 33.5-13.9 34.6-32L400 128z"/>
-    </svg>
-  );
-
   return (
-    // Main card container with enhanced shadow, border, and rounded corners
-    <div className="relative border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between bg-white" style={{ width: '200px', height: '350px' }}>
-      {/* Top right menu button */}
-      <div className="absolute top-2 right-2 z-10" ref={menuRef}>
-        <button
-          className="p-2 text-gray-500 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={toggleMenu}
-        >
-          <EllipsisVIcon />
-        </button>
-        {menuOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 py-1 text-sm">
-            {!template && (
-              <button
-                className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => handleCreateDocuments(documentId)}
-              >
-                <FileAltIcon /> Create Document
-              </button>
-            )}
-            {template && (
-              <button
-                className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => handleView(documentId)}
-              >
-                <FileAltIcon /> View
-              </button>
-            )}
-            {!template && (
-              <button
-                className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => handleEdit(documentId)}
-              >
-                <EditIcon /> Edit
-              </button>
-            )}
-            {template && (
-              <button
-                className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => handleDownloadDocument(docObj)}
-              >
-                <DownloadIcon /> Download
-              </button>
-            )}
-            <button
-              className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-red-50"
-              onClick={() => promptForDeletion(documentId)}
-            >
-              <TrashIcon /> Delete
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Thumbnail/Image Display Area */}
-      <div className="flex-1 p-4 pb-0 flex justify-center items-center">
-        <div
-          className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden"
-          style={{
-            height: '250px',
-            objectFit: 'contain',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          {/* Using a placeholder image if thumbnail is not available */}
-          {thumbnail ? (
-            <img
-              src={`data:image/png;base64,${thumbnail}`}
-              alt={name}
-              className="w-full h-full object-contain rounded-lg"
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -4 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Card className="relative overflow-hidden group cursor-pointer" style={{ width: '280px', height: '380px' }}>
+          {/* Menu Button */}
+          <div className="absolute top-3 right-3 z-10" ref={menuRef}>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<FaEllipsisV />}
+              onClick={toggleMenu}
+              className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 backdrop-blur-sm"
             />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg">
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-          )}
-        </div>
-      </div>
+            
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-20"
+                >
+                  {!template && (
+                    <motion.button
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                      onClick={() => handleCreateDocuments(documentId)}
+                      whileHover={{ x: 4 }}
+                    >
+                      <FaPlus className="h-4 w-4 text-green-500" />
+                      Create Document
+                    </motion.button>
+                  )}
+                  
+                  <motion.button
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                    onClick={() => handleView(documentId)}
+                    whileHover={{ x: 4 }}
+                  >
+                    <FaEye className="h-4 w-4 text-blue-500" />
+                    {template ? 'View' : 'Preview'}
+                  </motion.button>
 
-      {/* Document Name/Title */}
-      <div className="p-4 pt-2">
-        <div className="text-center font-semibold text-gray-800 text-base truncate">{name}</div>
-      </div>
+                  {!template && (
+                    <motion.button
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                      onClick={() => handleEdit(documentId)}
+                      whileHover={{ x: 4 }}
+                    >
+                      <FaEdit className="h-4 w-4 text-orange-500" />
+                      Edit
+                    </motion.button>
+                  )}
 
-      {/* Delete Confirmation Modal (inlined) */}
-      {deleteTemplateModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="p-6 bg-white rounded-lg shadow-lg max-w-sm mx-auto">
-            <h5 className="text-xl font-bold text-center mb-4 text-gray-800">Are you sure?</h5>
-            <p className="text-center mb-6 text-gray-600">You want to delete the {template ? 'document' : 'template'}?</p>
-            <div className="flex justify-center space-x-4">
-              <button
-                className="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors duration-200"
-                onClick={() => setDeleteTemplateModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors duration-200"
-                onClick={() => confirmDelete()}
-              >
-                Yes
-              </button>
+                  {template && (
+                    <motion.button
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                      onClick={() => handleDownloadDocument(docObj)}
+                      whileHover={{ x: 4 }}
+                    >
+                      <FaDownload className="h-4 w-4 text-green-500" />
+                      Download
+                    </motion.button>
+                  )}
+
+                  <div className="border-t border-gray-100 my-1" />
+                  
+                  <motion.button
+                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"
+                    onClick={() => setDeleteModal(true)}
+                    whileHover={{ x: 4 }}
+                  >
+                    <FaTrash className="h-4 w-4" />
+                    Delete
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Thumbnail */}
+          <div className="h-64 bg-gray-100 rounded-lg overflow-hidden">
+            {thumbnail ? (
+              <img
+                src={`data:image/png;base64,${thumbnail}`}
+                alt={name}
+                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                <FaFileAlt className="w-16 h-16 text-gray-400" />
+              </div>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="p-4">
+            <h3 className="font-semibold text-gray-900 text-lg mb-2 truncate">{name}</h3>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">
+                {template ? 'Document' : 'Template'}
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  icon={<FaEye />}
+                  onClick={() => handleView(documentId)}
+                />
+                {!template && (
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    icon={<FaEdit />}
+                    onClick={() => handleEdit(documentId)}
+                  />
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        </Card>
+      </motion.div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaTrash className="w-8 h-8 text-red-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Delete {template ? 'Document' : 'Template'}</h3>
+                <p className="text-gray-600 mb-6">
+                  Are you sure you want to delete this {template ? 'document' : 'template'}? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    variant="secondary"
+                    onClick={() => setDeleteModal(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={confirmDelete}
+                    className="flex-1"
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
@@ -216,24 +248,45 @@ const TemplateCards = ({ handleDeleteTemplate, handleDownload, template = false,
   const templateContext = useContext(TemplateContext);
   const templates = templateContext?.templates || [];
 
-  if (!templates) {
-    return <div>Loading templates...</div>;
+  if (!templates || templates.length === 0) {
+    return (
+      <motion.div 
+        className="text-center py-12"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FaFileAlt className="w-12 h-12 text-gray-400" />
+        </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+        <p className="text-gray-500 mb-6">Get started by creating your first template</p>
+        <Button variant="primary" icon={<FaPlus />}>
+          Create Template
+        </Button>
+      </motion.div>
+    );
   }
 
   return (
-    <div id="cardContainer" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-4 justify-items-center h-full overflow-y-auto">
-      {templates.map((doc) => (
-        <Card
-          docObj={doc}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4">
+      {templates.map((doc, index) => (
+        <motion.div
           key={doc._id}
-          documentId={doc._id}
-          name={doc.fileName}
-          thumbnail={doc.thumbnail}
-          handleDelete={handleDeleteTemplate}
-          handleDownload={handleDownload}
-          template={template}
-          projectId={projectId}
-        />
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+        >
+          <TemplateCard
+            docObj={doc}
+            documentId={doc._id}
+            name={doc.fileName}
+            thumbnail={doc.thumbnail}
+            handleDelete={handleDeleteTemplate}
+            handleDownload={handleDownload}
+            template={template}
+            projectId={projectId}
+          />
+        </motion.div>
       ))}
     </div>
   );
